@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vestiges — Espace développeur</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Écran de connexion -->
+<div class="admin-login" id="login-screen">
+  <div class="tablet">
+    <h1>Espace<br>développeur</h1>
+    <p style="color:var(--parchment-dim); margin-bottom:24px;">Entrez le code d'accès pour continuer.</p>
+    <div class="form-grid">
+      <input type="password" id="admin-code" placeholder="Code d'accès" autocomplete="off">
+      <button class="btn btn-primary" id="login-btn" style="width:100%; justify-content:center;">Entrer</button>
+      <div id="login-msg" class="form-msg err"></div>
+    </div>
+    <p style="margin-top:20px;"><a href="index.html" style="color:var(--parchment-dim); font-family:var(--font-mono); font-size:0.78rem;">← Retour au site</a></p>
+  </div>
+</div>
+
+<!-- Tableau de bord admin -->
+<div class="admin-shell" id="admin-shell">
+  <aside class="admin-sidebar">
+    <a href="index.html" class="logo">Vestige<span>s</span></a>
+    <nav>
+      <button class="nav-btn active" data-panel="panel-download">Fichier du jeu</button>
+      <button class="nav-btn" data-panel="panel-messages">Messages</button>
+      <button class="nav-btn" data-panel="panel-music">Musique</button>
+      <button class="nav-btn" data-panel="panel-comments">Commentaires</button>
+    </nav>
+    <div style="padding: 24px 24px 0;">
+      <button class="btn btn-ghost" id="logout-btn" style="width:100%; justify-content:center;">Se déconnecter</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+
+    <!-- Panel : fichier du jeu -->
+    <section id="panel-download" class="admin-panel active">
+      <h2>Fichier du jeu</h2>
+      <p style="color:var(--parchment-dim);">Déposez le fichier que les joueurs pourront télécharger (zip, exe, etc.). L'ancien fichier est remplacé.</p>
+      <div class="upload-row">
+        <label class="file-input-label">
+          <input type="file" id="game-file-input">
+          <span id="game-file-label">Choisir un fichier…</span>
+        </label>
+        <button class="btn btn-primary" id="upload-game-btn">Mettre en ligne</button>
+      </div>
+      <div id="game-upload-status" class="status-line"></div>
+      <div id="current-game-file" style="margin-top:20px; font-family:var(--font-mono); font-size:0.85rem; color:var(--verdigris);"></div>
+      <button class="btn btn-danger" id="delete-game-btn" style="margin-top:16px; display:none;">Supprimer le fichier en ligne</button>
+      <div id="game-delete-status" class="status-line"></div>
+    </section>
+
+    <!-- Panel : messages -->
+    <section id="panel-messages" class="admin-panel">
+      <h2>Messages reçus</h2>
+      <div id="messages-list"><div class="empty-state">Chargement…</div></div>
+    </section>
+
+    <!-- Panel : musique -->
+    <section id="panel-music" class="admin-panel">
+      <h2>Musique</h2>
+      <p style="color:var(--parchment-dim);">Ajoutez les morceaux qui seront proposés dans le lecteur du site.</p>
+      <div class="upload-row">
+        <input type="text" id="music-title-input" placeholder="Titre du morceau (facultatif)" style="max-width:260px;">
+        <label class="file-input-label">
+          <input type="file" id="music-file-input" accept="audio/*">
+          <span id="music-file-label">Choisir un fichier audio…</span>
+        </label>
+        <button class="btn btn-primary" id="upload-music-btn">Ajouter</button>
+      </div>
+      <div id="music-upload-status" class="status-line"></div>
+      <div id="music-list" style="margin-top:24px;"></div>
+    </section>
+
+    <!-- Panel : commentaires -->
+    <section id="panel-comments" class="admin-panel">
+      <h2>Modération des commentaires</h2>
+      <div id="admin-comments-list"><div class="empty-state">Chargement…</div></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vestiges — Site officiel</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="#top" class="logo">Vestige<span>s</span></a>
+    <ul class="nav-links">
+      <li><a href="#telechargement">Téléchargement</a></li>
+      <li><a href="#musique">Musique</a></li>
+      <li><a href="#commentaires">Commentaires</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><button class="admin-link-btn" id="open-admin-btn">Admin</button></li>
+    </ul>
+  </div>
+</header>
+
+<!-- Fenêtre de connexion admin (accessible depuis le bouton du header) -->
+<div class="admin-modal-overlay" id="admin-modal-overlay">
+  <div class="tablet admin-modal">
+    <button class="admin-modal-close" id="admin-modal-close" aria-label="Fermer">✕</button>
+    <div class="eyebrow" style="text-align:center;">Accès restreint</div>
+    <h3>Code développeur</h3>
+    <div class="form-grid">
+      <input type="password" id="admin-modal-code" placeholder="Code d'accès" autocomplete="off">
+      <button class="btn btn-primary" id="admin-modal-submit" style="width:100%; justify-content:center;">Entrer</button>
+      <div id="admin-modal-msg" class="form-msg err"></div>
+    </div>
+  </div>
+</div>
+
+<div id="top"></div>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Ce qui reste, après tout</div>
+    <h1>Vestig<em>e</em>s</h1>
+    <p class="tagline">Un monde effondré garde encore ses traces. Explorez ce qu'il en reste, une ruine à la fois.</p>
+    <div class="hero-actions">
+      <a href="#telechargement" class="btn btn-primary">Télécharger le jeu</a>
+      <a href="#commentaires" class="btn btn-ghost">Lire les avis</a>
+    </div>
+  </div>
+</section>
+
+<svg class="crack-divider" viewBox="0 0 1080 22" preserveAspectRatio="none"><path d="M0 11 L200 11 L230 4 L260 18 L300 11 L1080 11"/></svg>
+
+<section id="telechargement">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Fouille en cours</div>
+      <h2>Téléchargement</h2>
+      <p>La dernière version du jeu, déposée par le développeur.</p>
+    </div>
+    <div class="tablet download-box">
+      <p id="game-status">Vérification du fichier disponible…</p>
+      <a id="download-btn" href="/api/download" class="btn btn-primary" style="display:none;">Télécharger Vestiges</a>
+      <div id="game-file-name" class="file-name"></div>
+    </div>
+  </div>
+</section>
+
+<svg class="crack-divider" viewBox="0 0 1080 22" preserveAspectRatio="none"><path d="M0 11 L500 11 L520 20 L545 2 L570 11 L1080 11"/></svg>
+
+<section id="musique">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Échos enfouis</div>
+      <h2>Musique</h2>
+      <p>La bande-son du jeu, à écouter directement ici.</p>
+    </div>
+    <div class="tablet player">
+      <div class="track-title" id="track-title">Aucune musique disponible</div>
+      <div class="track-sub" id="track-sub">—</div>
+      <div class="progress-bar"><div id="progress-fill"></div></div>
+      <div class="player-controls">
+        <button class="btn btn-ghost" id="btn-stop">■ Arrêter</button>
+        <button class="btn btn-primary" id="btn-playpause">▶ Lire</button>
+        <button class="btn btn-ghost" id="btn-next">Suivante ▶▶</button>
+      </div>
+    </div>
+    <audio id="audio-player"></audio>
+  </div>
+</section>
+
+<svg class="crack-divider" viewBox="0 0 1080 22" preserveAspectRatio="none"><path d="M0 11 L700 11 L730 3 L760 15 L790 11 L1080 11"/></svg>
+
+<section id="commentaires">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Gravé dans la pierre</div>
+      <h2>Commentaires</h2>
+      <p>Laissez votre trace pour les prochains explorateurs.</p>
+    </div>
+
+    <div id="comments-list" class="comments-list">
+      <div class="empty-state">Chargement des commentaires…</div>
+    </div>
+
+    <form id="comment-form" class="form-grid">
+      <div>
+        <label for="c-name">Votre nom</label>
+        <input type="text" id="c-name" required maxlength="60">
+      </div>
+      <div>
+        <label for="c-comment">Votre commentaire</label>
+        <textarea id="c-comment" required maxlength="1000"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Publier le commentaire</button>
+      <div id="comment-form-msg" class="form-msg"></div>
+    </form>
+  </div>
+</section>
+
+<svg class="crack-divider" viewBox="0 0 1080 22" preserveAspectRatio="none"><path d="M0 11 L300 11 L320 19 L350 4 L380 11 L1080 11"/></svg>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Faire signe</div>
+      <h2>Contacter le développeur</h2>
+      <p>Un bug, une idée, une question ? Écrivez directement ici.</p>
+    </div>
+
+    <form id="contact-form" class="form-grid">
+      <div>
+        <label for="m-name">Votre nom</label>
+        <input type="text" id="m-name" required maxlength="100">
+      </div>
+      <div>
+        <label for="m-email">Votre adresse e-mail</label>
+        <input type="email" id="m-email" required maxlength="200">
+      </div>
+      <div>
+        <label for="m-message">Votre message</label>
+        <textarea id="m-message" required maxlength="3000"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Envoyer le message</button>
+      <div id="contact-form-msg" class="form-msg"></div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Vestiges — © <span id="year"></span> — <button class="admin-link-btn footer-admin-btn" id="open-admin-btn-footer">Accès développeur</button></div>
+</footer>
+
+<!-- Disque flottant fixe (bas droite) : contrôle rapide de la musique -->
+<div class="floating-disc-widget" id="floating-disc-widget" title="Aucune musique disponible">
+  <div class="disc" id="music-disc">
+    <div class="disc-shine"></div>
+    <div class="disc-icon" id="disc-icon">▶</div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
