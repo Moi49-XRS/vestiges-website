@@ -74,6 +74,28 @@ async function loadGameInfo() {
 }
 loadGameInfo();
 
+// ===================== ANNONCES =====================
+async function loadAnnouncements() {
+  const list = document.getElementById('announcements-list');
+  try {
+    const res = await fetch('/api/announcements');
+    const announcements = await res.json();
+    if (!announcements.length) {
+      list.innerHTML = '<div class="empty-state">Aucune annonce pour le moment.</div>';
+      return;
+    }
+    list.innerHTML = announcements.map(a => `
+      <div class="announcement">
+        <div class="announcement-date">${formatDate(a.date)}</div>
+        <p>${escapeHTML(a.text)}</p>
+      </div>
+    `).join('');
+  } catch (e) {
+    list.innerHTML = '<div class="empty-state">Impossible de charger les annonces.</div>';
+  }
+}
+loadAnnouncements();
+
 // ===================== COMMENTAIRES =====================
 function escapeHTML(str) {
   const div = document.createElement('div');

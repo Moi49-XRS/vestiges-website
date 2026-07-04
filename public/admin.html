@@ -28,6 +28,7 @@
     <a href="index.html" class="logo">Vestige<span>s</span></a>
     <nav>
       <button class="nav-btn active" data-panel="panel-download">Fichier du jeu</button>
+      <button class="nav-btn" data-panel="panel-announcements">Annonces</button>
       <button class="nav-btn" data-panel="panel-messages">Messages</button>
       <button class="nav-btn" data-panel="panel-music">Musique</button>
       <button class="nav-btn" data-panel="panel-comments">Commentaires</button>
@@ -54,6 +55,18 @@
       <div id="current-game-file" style="margin-top:20px; font-family:var(--font-mono); font-size:0.85rem; color:var(--verdigris);"></div>
       <button class="btn btn-danger" id="delete-game-btn" style="margin-top:16px; display:none;">Supprimer le fichier en ligne</button>
       <div id="game-delete-status" class="status-line"></div>
+    </section>
+
+    <!-- Panel : annonces -->
+    <section id="panel-announcements" class="admin-panel">
+      <h2>Annonces</h2>
+      <p style="color:var(--parchment-dim);">Écrivez une annonce, elle apparaîtra immédiatement sur le site pour tous les visiteurs.</p>
+      <div class="form-grid" style="margin-bottom:28px;">
+        <textarea id="announcement-text" placeholder="Écrivez votre annonce ici…" style="min-height:100px;"></textarea>
+        <button class="btn btn-primary" id="publish-announcement-btn">Publier l'annonce</button>
+        <div id="announcement-status" class="status-line"></div>
+      </div>
+      <div id="admin-announcements-list"></div>
     </section>
 
     <!-- Panel : messages -->

@@ -14,6 +14,7 @@ function showDashboard() {
   loginScreen.style.display = 'none';
   adminShell.classList.add('active');
   loadGameFileInfo();
+  loadAnnouncementsAdmin();
   loadMessages();
   loadMusicList();
   loadAdminComments();
@@ -78,6 +79,64 @@ function escapeHTML(str) {
 }
 function formatDateTime(iso) {
   return new Date(iso).toLocaleString('fr-FR');
+}
+
+// ===================== ANNONCES =====================
+document.getElementById('publish-announcement-btn').addEventListener('click', async () => {
+  const textarea = document.getElementById('announcement-text');
+  const status = document.getElementById('announcement-status');
+  const text = textarea.value.trim();
+  status.textContent = '';
+  status.className = 'status-line';
+  if (!text) {
+    status.textContent = 'Écrivez un texte avant de publier.';
+    status.classList.add('err');
+    return;
+  }
+  try {
+    const res = await adminFetch('/api/admin/announcements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur');
+    status.textContent = 'Annonce publiée sur le site.';
+    status.classList.add('ok');
+    textarea.value = '';
+    loadAnnouncementsAdmin();
+  } catch (err) {
+    status.textContent = err.message;
+    status.classList.add('err');
+  }
+});
+
+async function loadAnnouncementsAdmin() {
+  const container = document.getElementById('admin-announcements-list');
+  try {
+    const announcements = await (await fetch('/api/announcements')).json();
+    if (!announcements.length) {
+      container.innerHTML = '<div class="empty-state">Aucune annonce publiée pour le moment.</div>';
+      return;
+    }
+    container.innerHTML = announcements.map(a => `
+      <div class="msg-card" data-id="${a.id}">
+        <div class="msg-head"><span>${formatDateTime(a.date)}</span></div>
+        <p class="body">${escapeHTML(a.text)}</p>
+        <button class="btn btn-danger btn-delete-announcement">Supprimer</button>
+      </div>
+    `).join('');
+    container.querySelectorAll('.btn-delete-announcement').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const card = btn.closest('.msg-card');
+        if (!confirm('Supprimer cette annonce du site ?')) return;
+        await adminFetch('/api/admin/announcements/' + card.dataset.id, { method: 'DELETE' });
+        loadAnnouncementsAdmin();
+      });
+    });
+  } catch (e) {
+    container.innerHTML = '<div class="empty-state">Impossible de charger les annonces.</div>';
+  }
 }
 
 // ===================== FICHIER DU JEU =====================

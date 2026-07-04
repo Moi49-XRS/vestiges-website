@@ -20,6 +20,7 @@ const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
 const COMMENTS_FILE = path.join(DATA_DIR, 'comments.json');
 const MUSIC_FILE = path.join(DATA_DIR, 'music.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+const ANNOUNCEMENTS_FILE = path.join(DATA_DIR, 'announcements.json');
 
 [DATA_DIR, UPLOADS_DIR, GAME_DIR, MUSIC_DIR].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -88,7 +89,7 @@ const musicStorage = multer.diskStorage({
 });
 const uploadMusic = multer({ storage: musicStorage, limits: { fileSize: 50 * 1024 * 1024 } }); // 50 Mo max
 
-// ---------- Nodemailer (envoi de réponses par e-mail) ----------
+// ---------- Nodemailer (envoi de réponses par e-mail en SMTP classique — fonctionne en local) ----------
 let transporter = null;
 if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
   transporter = nodemailer.createTransport({
@@ -100,6 +101,73 @@ if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
       pass: process.env.SMTP_PASS
     }
   });
+}
+
+// ---------- Envoi via EmailJS (API HTTP — aucune adresse postale requise à l'inscription) ----------
+async function sendViaEmailJS(to, subject, text) {
+  const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      service_id: process.env.EMAILJS_SERVICE_ID,
+      template_id: process.env.EMAILJS_TEMPLATE_ID,
+      user_id: process.env.EMAILJS_PUBLIC_KEY,
+      accessToken: process.env.EMAILJS_PRIVATE_KEY,
+      template_params: {
+        to_email: to,
+        subject: subject || 'Réponse - Vestiges',
+        message: text
+      }
+    })
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`EmailJS a refusé l'envoi (${res.status}) : ${errText}`);
+  }
+}
+
+// ---------- Envoi via Brevo (API HTTP — recommandé sur Render, contourne le blocage SMTP) ----------
+async function sendViaBrevo(to, subject, text) {
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.SMTP_USER;
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'api-key': process.env.BREVO_API_KEY
+    },
+    body: JSON.stringify({
+      sender: { email: senderEmail, name: 'Vestiges - Développeur' },
+      to: [{ email: to }],
+      subject: subject || 'Réponse - Vestiges',
+      textContent: text
+    })
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Brevo a refusé l'envoi (${res.status}) : ${errText}`);
+  }
+}
+
+// Choisit automatiquement la meilleure méthode disponible pour envoyer un e-mail
+async function sendReplyEmail(to, subject, text) {
+  if (process.env.EMAILJS_SERVICE_ID) {
+    return sendViaEmailJS(to, subject, text);
+  }
+  if (process.env.BREVO_API_KEY) {
+    return sendViaBrevo(to, subject, text);
+  }
+  if (transporter) {
+    return transporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to,
+      subject: subject || 'Réponse - Vestiges',
+      text
+    });
+  }
+  throw new Error(
+    "L'envoi d'e-mails n'est pas configuré. Ajoutez EMAILJS_SERVICE_ID (recommandé, sans adresse requise) ou BREVO_API_KEY ou SMTP_HOST/SMTP_USER/SMTP_PASS dans les variables d'environnement."
+  );
 }
 
 // ---------- Protection contre les tentatives répétées sur le code admin ----------
@@ -192,6 +260,12 @@ app.post('/api/comments', (req, res) => {
   res.json({ success: true, comment: newComment });
 });
 
+// --- Annonces : lire (les plus récentes en premier) ---
+app.get('/api/announcements', (req, res) => {
+  const announcements = readJSON(ANNOUNCEMENTS_FILE, []);
+  res.json(announcements);
+});
+
 // --- Musique : liste des morceaux disponibles ---
 app.get('/api/music', (req, res) => {
   const music = readJSON(MUSIC_FILE, []);
@@ -263,18 +337,8 @@ app.post('/api/admin/reply', checkAdmin, async (req, res) => {
   if (!to || !body) {
     return res.status(400).json({ error: 'Destinataire et texte de réponse requis.' });
   }
-  if (!transporter) {
-    return res.status(500).json({
-      error: "L'envoi d'e-mails n'est pas configuré. Renseignez SMTP_HOST, SMTP_USER et SMTP_PASS dans le fichier .env."
-    });
-  }
   try {
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to,
-      subject: subject || 'Réponse - Vestiges',
-      text: body
-    });
+    await sendReplyEmail(to, subject, body);
     if (id) {
       const messages = readJSON(MESSAGES_FILE, []);
       const idx = messages.findIndex(m => m.id === id);
@@ -296,6 +360,31 @@ app.delete('/api/admin/messages/:id', checkAdmin, (req, res) => {
   let messages = readJSON(MESSAGES_FILE, []);
   messages = messages.filter(m => m.id !== req.params.id);
   writeJSON(MESSAGES_FILE, messages);
+  res.json({ success: true });
+});
+
+// --- Publier une annonce ---
+app.post('/api/admin/announcements', checkAdmin, (req, res) => {
+  const { text } = req.body;
+  if (!text || !text.trim()) {
+    return res.status(400).json({ error: 'Le texte de l\'annonce est requis.' });
+  }
+  const announcements = readJSON(ANNOUNCEMENTS_FILE, []);
+  const newAnnouncement = {
+    id: Date.now().toString(),
+    text: String(text).trim().slice(0, 2000),
+    date: new Date().toISOString()
+  };
+  announcements.unshift(newAnnouncement);
+  writeJSON(ANNOUNCEMENTS_FILE, announcements);
+  res.json({ success: true, announcement: newAnnouncement });
+});
+
+// --- Supprimer une annonce ---
+app.delete('/api/admin/announcements/:id', checkAdmin, (req, res) => {
+  let announcements = readJSON(ANNOUNCEMENTS_FILE, []);
+  announcements = announcements.filter(a => a.id !== req.params.id);
+  writeJSON(ANNOUNCEMENTS_FILE, announcements);
   res.json({ success: true });
 });
 
@@ -361,7 +450,7 @@ app.delete('/api/admin/comments/:id', checkAdmin, (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`\n  Vestiges — le serveur tourne sur http://localhost:${PORT}\n`);
-  if (!transporter) {
-    console.log('  ⚠️  Envoi d\'e-mails non configuré : renseignez le fichier .env pour activer les réponses par mail.\n');
+  if (!process.env.BREVO_API_KEY && !transporter) {
+    console.log('  ⚠️  Envoi d\'e-mails non configuré : renseignez BREVO_API_KEY (recommandé sur Render) ou SMTP_HOST/SMTP_USER/SMTP_PASS dans le fichier .env.\n');
   }
 });
