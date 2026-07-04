@@ -107,15 +107,24 @@ header {
   text-align: center;
   position: relative;
   overflow: hidden;
+  background-image:
+    linear-gradient(180deg, rgba(21,19,15,0.35) 0%, rgba(21,19,15,0.75) 55%, var(--stone-deep) 100%),
+    url('img/hero-bg.jpg');
+  background-size: cover;
+  background-position: center 30%;
 }
 .hero::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, transparent 60%, var(--stone-deep) 100%),
+    linear-gradient(180deg, transparent 55%, var(--stone-deep) 100%),
     repeating-linear-gradient(115deg, rgba(233,223,196,0.02) 0 2px, transparent 2px 90px);
   pointer-events: none;
+}
+.hero .wrap {
+  position: relative;
+  z-index: 1;
 }
 .eyebrow {
   font-family: var(--font-mono);
