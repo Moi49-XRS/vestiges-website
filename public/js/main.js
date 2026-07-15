@@ -74,6 +74,23 @@ async function loadGameInfo() {
 }
 loadGameInfo();
 
+// ===================== COMMUNAUTÉ WHATSAPP =====================
+async function loadWhatsappFollowers() {
+  const el = document.getElementById('whatsapp-count-text');
+  try {
+    const res = await fetch('/api/whatsapp-followers');
+    const data = await res.json();
+    if (data.count) {
+      el.textContent = `${data.count.toLocaleString('fr-FR')} abonnés`;
+    } else {
+      el.textContent = 'Rejoignez la chaîne';
+    }
+  } catch (e) {
+    el.textContent = 'Rejoignez la chaîne';
+  }
+}
+loadWhatsappFollowers();
+
 // ===================== ANNONCES =====================
 async function loadAnnouncements() {
   const list = document.getElementById('announcements-list');

@@ -355,6 +355,32 @@ app.get('/api/music', async (req, res) => {
   res.json(music);
 });
 
+// --- Nombre d'abonnés de la chaîne WhatsApp (récupéré depuis la page publique, mis en cache) ---
+const WHATSAPP_CHANNEL_URL = process.env.WHATSAPP_CHANNEL_URL || 'https://whatsapp.com/channel/0029Vb7ogpi0Vyc9cWOUpb3i';
+let whatsappCache = { count: null, fetchedAt: 0 };
+const WHATSAPP_CACHE_MS = 10 * 60 * 1000; // 10 minutes
+
+app.get('/api/whatsapp-followers', async (req, res) => {
+  const now = Date.now();
+  if (whatsappCache.count !== null && now - whatsappCache.fetchedAt < WHATSAPP_CACHE_MS) {
+    return res.json({ count: whatsappCache.count, channelUrl: WHATSAPP_CHANNEL_URL });
+  }
+  try {
+    const pageRes = await fetch(WHATSAPP_CHANNEL_URL);
+    const html = await pageRes.text();
+    const match = html.match(/Channel\s*[•·]\s*([\d.,]+)\s*followers/i);
+    if (match) {
+      const count = parseInt(match[1].replace(/[.,]/g, ''), 10);
+      whatsappCache = { count, fetchedAt: now };
+      return res.json({ count, channelUrl: WHATSAPP_CHANNEL_URL });
+    }
+    throw new Error('Nombre introuvable dans la page');
+  } catch (e) {
+    // En cas d'échec, on renvoie la dernière valeur connue (même périmée) plutôt que rien
+    return res.json({ count: whatsappCache.count, channelUrl: WHATSAPP_CHANNEL_URL });
+  }
+});
+
 // --- Téléchargement du jeu ---
 app.get('/api/download', async (req, res) => {
   const settings = await readJSON('settings', {});
