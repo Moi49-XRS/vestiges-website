@@ -1,0 +1,15 @@
+[
+  { "key": "direction", "label": "Direction du projet", "value": "" },
+  { "key": "codirection", "label": "Co-direction du projet", "value": "" },
+  { "key": "partenaire", "label": "Partenaire officiel du jeu", "value": "Un Meme Par Jour" },
+  { "key": "siteweb", "label": "Site web", "value": "" },
+  { "key": "scenario", "label": "Scénario", "value": "" },
+  { "key": "model3d", "label": "Modèles 3D", "value": "" },
+  { "key": "graphisme", "label": "Graphisme", "value": "" },
+  { "key": "programme", "label": "Programmation", "value": "" },
+  { "key": "audio", "label": "Audio", "value": "" },
+  { "key": "communication", "label": "Communication", "value": "" },
+  { "key": "betatesteur", "label": "Bêta testeurs", "value": "" },
+  { "key": "administration", "label": "Administration", "value": "" },
+  { "key": "autres", "label": "Autres", "value": "" }
+]
