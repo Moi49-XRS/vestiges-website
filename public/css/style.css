@@ -7,10 +7,11 @@
   --stone-line: #3c362c;
   --parchment: #e9dfc4;
   --parchment-dim: #a89c81;
-  --gold: #c9a24b;
-  --gold-dim: #8a723a;
-  --verdigris: #6f9082;
-  --rust: #a3542f;
+  --gold: #e8b03e;
+  --gold-dim: #a9832f;
+  --verdigris: #45d6ac;
+  --rust: #ff6a3d;
+  --azure: #6fa4e8;
 
   --font-display: 'Cormorant Garamond', serif;
   --font-body: 'Work Sans', sans-serif;
@@ -186,23 +187,49 @@ header {
 }
 .logo span { color: var(--gold); }
 .nav-links {
+  --a1: var(--gold);
+  --a2: var(--verdigris);
+  --a3: var(--rust);
+  --a4: var(--azure);
   display: flex;
-  gap: 30px;
+  align-items: center;
+  gap: 10px;
   list-style: none;
   margin: 0; padding: 0;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.nav-links a {
+.nav-links li {
+  --accent: var(--a1);
+  transition: transform 0.25s ease;
+}
+.nav-links li:nth-child(4n+1) { --accent: var(--a1); transform: translateY(-4px); }
+.nav-links li:nth-child(4n+2) { --accent: var(--a2); transform: translateY(3px); }
+.nav-links li:nth-child(4n+3) { --accent: var(--a3); transform: translateY(-2px); }
+.nav-links li:nth-child(4n+4) { --accent: var(--a4); transform: translateY(4px); }
+.nav-links li:hover { transform: translateY(0); }
+.nav-links a,
+.nav-links .admin-link-btn {
+  position: relative;
+  display: inline-flex;
   color: var(--parchment-dim);
   text-decoration: none;
-  transition: color 0.2s;
-  padding-bottom: 4px;
-  border-bottom: 1px solid transparent;
+  padding: 9px 14px;
+  background: var(--stone-panel);
+  border: 1px solid var(--stone-line);
+  border-bottom: 2px solid var(--stone-line);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+  transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
-.nav-links a:hover { color: var(--gold); border-color: var(--gold-dim); }
+.nav-links a:hover,
+.nav-links .admin-link-btn:hover {
+  color: var(--stone-deep);
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px -2px var(--accent);
+}
 
 /* ---------- Hero ---------- */
 .hero {
