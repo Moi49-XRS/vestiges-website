@@ -9,7 +9,7 @@ const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = re
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const ADMIN_CODE = process.env.ADMIN_CODE || 'Paul123';
+const ADMIN_CODE = process.env.ADMIN_CODE || 'V2702#CER';
 
 // Crédits par défaut (utilisés si data/credits.json est vide/absent)
 const DEFAULT_CREDITS = [
