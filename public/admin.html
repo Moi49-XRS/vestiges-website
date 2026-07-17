@@ -32,6 +32,7 @@
       <button class="nav-btn" data-panel="panel-messages">Messages</button>
       <button class="nav-btn" data-panel="panel-music">Musique</button>
       <button class="nav-btn" data-panel="panel-comments">Commentaires</button>
+      <button class="nav-btn" data-panel="panel-credits">Crédits</button>
     </nav>
     <div style="padding: 24px 24px 0;">
       <button class="btn btn-ghost" id="logout-btn" style="width:100%; justify-content:center;">Se déconnecter</button>
@@ -95,6 +96,17 @@
     <section id="panel-comments" class="admin-panel">
       <h2>Modération des commentaires</h2>
       <div id="admin-comments-list"><div class="empty-state">Chargement…</div></div>
+    </section>
+
+    <!-- Panel : crédits -->
+    <section id="panel-credits" class="admin-panel">
+      <h2>Crédits</h2>
+      <p style="color:var(--parchment-dim);">Renseignez le nom pour chaque poste. Laissez vide les postes non attribués.</p>
+      <div class="form-grid" id="credits-form">
+        <div class="empty-state">Chargement…</div>
+      </div>
+      <button class="btn btn-primary" id="save-credits-btn" style="margin-top:16px;">Enregistrer les crédits</button>
+      <div id="credits-status" class="status-line"></div>
     </section>
 
   </main>
