@@ -186,6 +186,37 @@ header {
   text-transform: uppercase;
 }
 .logo span { color: var(--gold); }
+.credits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.credit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--stone-panel);
+  border: 1px solid var(--stone-line);
+  border-left: 2px solid var(--gold-dim);
+}
+.credit-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--parchment-dim);
+}
+.credit-value {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--gold);
+  text-align: right;
+}
+
 .nav-links {
   --a1: var(--gold);
   --a2: var(--verdigris);
