@@ -11,22 +11,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const ADMIN_CODE = process.env.ADMIN_CODE || 'V2702#CER';
 
-// Crédits par défaut (utilisés si data/credits.json est vide/absent)
-const DEFAULT_CREDITS = [
-  { key: 'direction', label: 'Direction du projet', value: '' },
-  { key: 'codirection', label: 'Co-direction du projet', value: '' },
-  { key: 'partenaire', label: 'Partenaire officiel du jeu', value: 'Un Meme Par Jour' },
-  { key: 'siteweb', label: 'Site web', value: '' },
-  { key: 'scenario', label: 'Scénario', value: '' },
-  { key: 'model3d', label: 'Modèles 3D', value: '' },
-  { key: 'graphisme', label: 'Graphisme', value: '' },
-  { key: 'programme', label: 'Programmation', value: '' },
-  { key: 'audio', label: 'Audio', value: '' },
-  { key: 'communication', label: 'Communication', value: '' },
-  { key: 'betatesteur', label: 'Bêta testeurs', value: '' },
-  { key: 'administration', label: 'Administration', value: '' },
-  { key: 'autres', label: 'Autres', value: '' }
-];
+// Texte des crédits par défaut (utilisé si data/credits.json est vide/absent)
+const DEFAULT_CREDITS_TEXT = `Direction du projet — 
+Co-direction du projet — 
+Partenaire officiel du jeu — Un Meme Par Jour
+Site web — 
+Scénario — 
+Modèles 3D — 
+Graphisme — 
+Programmation — 
+Audio — 
+Communication — 
+Bêta testeurs — 
+Administration — 
+Autres — `;
 
 // =========================================================
 //   STOCKAGE DES DONNÉES (messages, comptages, réglages...)
@@ -374,8 +372,8 @@ app.get('/api/music', async (req, res) => {
 
 // --- Crédits : lire ---
 app.get('/api/credits', async (req, res) => {
-  const credits = await readJSON('credits', DEFAULT_CREDITS);
-  res.json(credits);
+  const data = await readJSON('credits', { text: DEFAULT_CREDITS_TEXT });
+  res.json({ text: data.text || '' });
 });
 
 // --- Nombre d'abonnés de la chaîne WhatsApp (récupéré depuis la page publique, mis en cache) ---
@@ -551,17 +549,13 @@ app.delete('/api/admin/announcements/:id', checkAdmin, async (req, res) => {
 
 // --- Mettre à jour les crédits ---
 app.post('/api/admin/credits', checkAdmin, async (req, res) => {
-  const { credits } = req.body;
-  if (!Array.isArray(credits)) {
+  const { text } = req.body;
+  if (typeof text !== 'string') {
     return res.status(400).json({ error: 'Format de crédits invalide.' });
   }
-  const sanitized = credits.map(c => ({
-    key: String(c.key || '').slice(0, 50),
-    label: String(c.label || '').slice(0, 100),
-    value: String(c.value || '').slice(0, 200)
-  }));
-  await writeJSON('credits', sanitized);
-  res.json({ success: true, credits: sanitized });
+  const sanitized = text.slice(0, 5000);
+  await writeJSON('credits', { text: sanitized });
+  res.json({ success: true, text: sanitized });
 });
 
 // --- Envoyer / remplacer le fichier téléchargeable du jeu ---
