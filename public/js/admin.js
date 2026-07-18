@@ -390,35 +390,25 @@ async function loadAdminComments() {
 
 // ===================== CRÉDITS =====================
 async function loadCreditsAdmin() {
-  const form = document.getElementById('credits-form');
+  const textarea = document.getElementById('credits-text');
   try {
-    const credits = await (await fetch('/api/credits')).json();
-    form.innerHTML = credits.map(c => `
-      <div>
-        <label>${escapeHTML(c.label)}</label>
-        <input type="text" class="credit-input" data-key="${escapeHTML(c.key)}" data-label="${escapeHTML(c.label)}" value="${escapeHTML(c.value || '')}" placeholder="Nom…">
-      </div>
-    `).join('');
+    const data = await (await fetch('/api/credits')).json();
+    textarea.value = data.text || '';
   } catch (e) {
-    form.innerHTML = '<div class="empty-state">Impossible de charger les crédits.</div>';
+    textarea.value = '';
   }
 }
 
 document.getElementById('save-credits-btn').addEventListener('click', async () => {
   const status = document.getElementById('credits-status');
+  const text = document.getElementById('credits-text').value;
   status.textContent = '';
   status.className = 'status-line';
-  const inputs = document.querySelectorAll('.credit-input');
-  const credits = Array.from(inputs).map(inp => ({
-    key: inp.dataset.key,
-    label: inp.dataset.label,
-    value: inp.value.trim()
-  }));
   try {
     const res = await adminFetch('/api/admin/credits', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credits })
+      body: JSON.stringify({ text })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erreur');
