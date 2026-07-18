@@ -113,28 +113,6 @@ async function loadAnnouncements() {
 }
 loadAnnouncements();
 
-// ===================== CRÉDITS =====================
-async function loadCredits() {
-  const list = document.getElementById('credits-list');
-  try {
-    const res = await fetch('/api/credits');
-    const credits = await res.json();
-    if (!credits.length) {
-      list.innerHTML = '<div class="empty-state">Crédits à venir.</div>';
-      return;
-    }
-    list.innerHTML = credits.map(c => `
-      <div class="credit-row">
-        <span class="credit-label">${escapeHTML(c.label)}</span>
-        <span class="credit-value">${c.value ? escapeHTML(c.value) : '—'}</span>
-      </div>
-    `).join('');
-  } catch (e) {
-    list.innerHTML = '<div class="empty-state">Impossible de charger les crédits.</div>';
-  }
-}
-loadCredits();
-
 // ===================== COMMENTAIRES =====================
 function escapeHTML(str) {
   const div = document.createElement('div');
