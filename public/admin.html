@@ -101,12 +101,12 @@
     <!-- Panel : crédits -->
     <section id="panel-credits" class="admin-panel">
       <h2>Crédits</h2>
-      <p style="color:var(--parchment-dim);">Renseignez le nom pour chaque poste. Laissez vide les postes non attribués.</p>
-      <div class="form-grid" id="credits-form">
-        <div class="empty-state">Chargement…</div>
+      <p style="color:var(--parchment-dim);">Écrivez librement le contenu de la page Crédits (une ligne par poste, par exemple). Les retours à la ligne seront respectés sur le site.</p>
+      <div class="form-grid">
+        <textarea id="credits-text" placeholder="Écrivez les crédits ici…" style="min-height:260px;"></textarea>
+        <button class="btn btn-primary" id="save-credits-btn">Enregistrer les crédits</button>
+        <div id="credits-status" class="status-line"></div>
       </div>
-      <button class="btn btn-primary" id="save-credits-btn" style="margin-top:16px;">Enregistrer les crédits</button>
-      <div id="credits-status" class="status-line"></div>
     </section>
 
   </main>
