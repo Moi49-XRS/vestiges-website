@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vestiges — Crédits</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="credits-page">
+  <div class="tablet">
+    <div class="eyebrow" style="text-align:center;">Ceux qui ont bâti le cube</div>
+    <h1>Crédits</h1>
+    <div id="credits-text" class="credits-text">Chargement…</div>
+    <p style="margin-top:24px;"><a href="index.html" style="color:var(--parchment-dim); font-family:var(--font-mono); font-size:0.78rem;">← Retour au site</a></p>
+  </div>
+</div>
+
+<script>
+  fetch('/api/credits')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('credits-text').textContent = data.text || '';
+    })
+    .catch(() => {
+      document.getElementById('credits-text').textContent = 'Impossible de charger les crédits.';
+    });
+</script>
+
+</body>
+</html>
